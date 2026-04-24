@@ -1,8 +1,8 @@
 const path = require('path');
 
 module.exports = {
-  'config': path.resolve(__dirname, 'server/src/infrastructure/database/mysql/config/config.cjs'),
-  'models-path': path.resolve(__dirname, 'server/src/infrastructure/database/mysql/models'),
-  'seeders-path': path.resolve(__dirname, 'server/src/infrastructure/database/mysql/seeders'),
-  'migrations-path': path.resolve(__dirname, 'server/src/infrastructure/database/mysql/migrations')
+  'config': path.resolve(__dirname, 'src/infrastructure/database/mysql/config/config.cjs'),
+  'models-path': path.resolve(__dirname, 'src/infrastructure/database/mysql/models'),
+  'seeders-path': path.resolve(__dirname, 'src/infrastructure/database/mysql/seeders'),
+  'migrations-path': path.resolve(__dirname, 'src/infrastructure/database/mysql/migrations')
 };
