@@ -1,5 +1,5 @@
 module.exports = {
-  'config': './src/infrastructure/database/mysql/config/config.cjs',
+  'config': './src/infrastructure/database/mysql/config.cjs',
   'models-path': './src/infrastructure/database/mysql/models',
   'seeders-path': './src/infrastructure/database/mysql/seeders',
   'migrations-path': './src/infrastructure/database/mysql/migrations'
