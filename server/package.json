@@ -12,7 +12,7 @@
     "migrate:undo": "npx sequelize-cli db:migrate:undo",
     "seed": "npx sequelize-cli db:seed:all",
     "start": "node dist/index.js",
-    "prestart": "npm run migrate"
+    "prestart": "npm run migrate && npm run seed"
   },
   "keywords": [],
   "author": "",
