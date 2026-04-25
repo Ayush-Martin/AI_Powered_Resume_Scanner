@@ -3,6 +3,7 @@ import Skill from "./skill.model";
 import JobRoleSkill from "./jobRoleSkill.model";
 import User from "./user.model";
 import RefreshToken from "./refreshToken.model";
+import ScanReport from "./scanReport.model";
 
 
 JobRole.belongsToMany(Skill, { through: JobRoleSkill, foreignKey: 'jobRoleId' });
@@ -16,5 +17,6 @@ export {
   RefreshToken,
   JobRole,
   Skill,
-  JobRoleSkill
+  JobRoleSkill,
+  ScanReport,
 };

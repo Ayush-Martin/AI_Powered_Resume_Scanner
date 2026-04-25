@@ -6,6 +6,7 @@ declare global {
   namespace Express {
     interface Request {
       userId?: number;
+      resumeBuffer?: Buffer; // Added for PDF buffer from Multer middleware
     }
   }
 }
