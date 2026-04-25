@@ -17,6 +17,11 @@ import LoginUseCase from "../../application/useCases/auth/login.useCase";
 import { IRefreshUseCase } from "../../application/interface/useCases/auth/IRefresh.useCase";
 import RefreshUseCase from "../../application/useCases/auth/refresh.useCase";
 import UserAuthMiddleware from "../../presentation/REST/middlewares/userAuth.middleware";
+import { IJOBRoleRepository } from "../interface/repositories/IJobRole.repository";
+import JobRoleRepository from "../repositories/jobRole.repository";
+import { IGetJobRolesUseCase } from "../../application/interface/useCases/jobRole/IGetJobRoles.useCase";
+import GetJobRolesUseCase from "../../application/useCases/jobRole/getJobRoles.useCase";
+import JobRoleController from "../../presentation/REST/controllers/jobRole.controller";
 
 const container = new Container();
 
@@ -25,6 +30,7 @@ container.bind<IUserRepository>(TYPES.UserRepository).to(UserRepository);
 container
   .bind<IRefreshTokenRepository>(TYPES.RefreshTokenRepository)
   .to(RefreshTokenRepository);
+container.bind<IJOBRoleRepository>(TYPES.JobRoleRepository).to(JobRoleRepository);
 
 // Services
 container.bind<IHashingService>(TYPES.HashingService).to(BcryptService);
@@ -34,10 +40,11 @@ container.bind<IJWTService>(TYPES.JWTService).to(JWTService);
 container.bind<IRegisterUseCase>(TYPES.RegisterUseCase).to(RegisterUseCase);
 container.bind<ILoginUseCase>(TYPES.LoginUseCase).to(LoginUseCase);
 container.bind<IRefreshUseCase>(TYPES.RefreshUseCase).to(RefreshUseCase);
+container.bind<IGetJobRolesUseCase>(TYPES.GetJobRolesUseCase).to(GetJobRolesUseCase);
 
 // Controllers
 container.bind<AuthController>(TYPES.AuthController).to(AuthController);
-
+container.bind<JobRoleController>(TYPES.JobRoleController).to(JobRoleController);
 // Middlewares
 container
   .bind<ErrorHandlerMiddleware>(TYPES.ErrorHandlerMiddleware)

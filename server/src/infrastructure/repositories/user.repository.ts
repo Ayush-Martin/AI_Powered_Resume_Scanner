@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { IUserRepository } from "../interface/repositories/IUser.repository";
-import User from "../database/mysql/models/user.model";
+import {User} from "../database/mysql/models";
 import UserEntity from "../../domain/entities/user.entity";
 import Email from "../../domain/valueObjects/user/email.vo";
 import Password from "../../domain/valueObjects/user/password.vo";

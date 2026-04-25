@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import RefreshToken from "../database/mysql/models/refreshToken.model";
+import {RefreshToken} from "../database/mysql/models";
 import RefreshTokenEntity from "../../domain/entities/refreshToken.entity";
 import { IRefreshTokenRepository } from "../interface/repositories/IRefreshToken.repository";
 
