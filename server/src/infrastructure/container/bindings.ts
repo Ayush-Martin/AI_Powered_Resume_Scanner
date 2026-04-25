@@ -36,6 +36,10 @@ import { ICreateScanReportUseCase } from "../../application/interface/useCases/s
 import CreateScanReportUseCase from "../../application/useCases/scanReport/createScanReport.useCase";
 import ScanReportController from "../../presentation/REST/controllers/scanReport.controller";
 import PDFStorageMiddleware from "../../presentation/REST/middlewares/pdfStorage.middleware";
+import { IGetScanReportUseCase } from "../../application/interface/useCases/scanReport/IGetScanReport.useCase";
+import { IGetScanReportsUseCase } from "../../application/interface/useCases/scanReport/IGetScanReports.useCase";
+import GetScanReportUseCase from "../../application/useCases/scanReport/getScanReport.useCase";
+import GetScanReportsUseCase from "../../application/useCases/scanReport/getScanReports.useCase";
 
 const container = new Container();
 
@@ -69,6 +73,12 @@ container
 container
   .bind<ICreateScanReportUseCase>(TYPES.CreateScanReportUseCase)
   .to(CreateScanReportUseCase);
+container
+  .bind<IGetScanReportUseCase>(TYPES.GetScanReportUseCase)
+  .to(GetScanReportUseCase);
+container
+  .bind<IGetScanReportsUseCase>(TYPES.GetScanReportsUseCase)
+  .to(GetScanReportsUseCase);
 
 // Controllers
 container.bind<AuthController>(TYPES.AuthController).to(AuthController);

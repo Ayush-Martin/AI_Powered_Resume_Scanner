@@ -19,6 +19,8 @@ export enum TYPES {
   RefreshUseCase = "RefreshUseCase",
   GetJobRolesUseCase = "GetJobRolesUseCase",
   CreateScanReportUseCase = "CreateScanReportUseCase",
+  GetScanReportUseCase = "GetScanReportUseCase",
+  GetScanReportsUseCase = "GetScanReportsUseCase",
 
   // Controllers
   AuthController = "AuthController",

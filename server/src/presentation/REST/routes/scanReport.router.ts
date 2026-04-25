@@ -9,10 +9,11 @@ const scanReportRouter = Router();
 
 scanReportRouter.use(userAuthMiddleware.accessTokenValidator);
 
-scanReportRouter.post(
-  "/",
-  pdfStorageMiddleware.execute,
-  scanReportController.createScanReport,
-);
+scanReportRouter
+  .route("/")
+  .get(scanReportController.getScanReports)
+  .post(pdfStorageMiddleware.execute, scanReportController.createScanReport);
+
+scanReportRouter.route("/:id").get(scanReportController.getScanReport);
 
 export default scanReportRouter;
