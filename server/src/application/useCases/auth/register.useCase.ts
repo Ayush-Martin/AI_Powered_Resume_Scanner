@@ -25,7 +25,7 @@ class RegisterUseCase implements IRegisterUseCase {
     const userWithSameEmail = await this._userRepository.findByEmail(dto.email);
 
     if (userWithSameEmail) {
-      throw new ConflictError(AuthResponseMessages.USER_EXISTS);
+      throw new ConflictError(AuthResponseMessages.EMAIL_ALREADY_EXISTS);
     }
 
     const hashedPassword = await this._hashingService.hash(dto.password);
