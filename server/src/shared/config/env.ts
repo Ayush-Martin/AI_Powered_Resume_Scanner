@@ -11,4 +11,7 @@ export const envConfig = {
   ACCESS_TOKEN_EXPIRY_MIN: process.env.ACCESS_TOKEN_EXPIRY_MIN || 15,
   REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET!,
   REFRESH_TOKEN_EXPIRY_DAY: process.env.REFRESH_TOKEN_EXPIRY_DAY || 30,
+
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY!,
+  GEMINI_MODEL: process.env.GEMINI_MODEL || "gemini-1.5-flash",
 } as const;
