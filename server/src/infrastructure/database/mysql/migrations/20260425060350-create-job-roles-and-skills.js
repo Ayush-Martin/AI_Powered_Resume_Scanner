@@ -57,6 +57,7 @@ module.exports = {
     await queryInterface.createTable('job_role_skills', {
       jobRoleId: {
         type: Sequelize.INTEGER,
+        primaryKey: true,
         allowNull: false,
         references: {
           model: 'job_roles',
@@ -67,6 +68,7 @@ module.exports = {
       },
       skillId: {
         type: Sequelize.INTEGER,
+        primaryKey: true,
         allowNull: false,
         references: {
           model: 'skills',
@@ -86,13 +88,6 @@ module.exports = {
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       }
-    });
-
-    // Add a composite primary key to the junction table to prevent duplicate pairs
-    await queryInterface.addConstraint('job_role_skills', {
-      fields: ['jobRoleId', 'skillId'],
-      type: 'primary key',
-      name: 'job_role_skills_pkey'
     });
   },
 
