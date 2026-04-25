@@ -28,6 +28,14 @@ import GeminiService from "../services/gemini.service";
 import { ILLMService } from "../interface/services/ILLM.service";
 import PdfParserService from "../services/PdfParser.service";
 import { IPdfParserService } from "../interface/services/IPdfParser.service";
+import { IScanReportRepository } from "../interface/repositories/IScanReport.repository";
+import ScanReportRepository from "../repositories/scanReport.repository";
+import { IPromptService } from "../../domain/interface/service/IPrompt.service";
+import PromptService from "../../domain/service/prompt.service";
+import { ICreateScanReportUseCase } from "../../application/interface/useCases/scanReport/ICreateScanReport.useCase";
+import CreateScanReportUseCase from "../../application/useCases/scanReport/createScanReport.useCase";
+import ScanReportController from "../../presentation/REST/controllers/scanReport.controller";
+import PDFStorageMiddleware from "../../presentation/REST/middlewares/pdfStorage.middleware";
 
 const container = new Container();
 
@@ -36,7 +44,12 @@ container.bind<IUserRepository>(TYPES.UserRepository).to(UserRepository);
 container
   .bind<IRefreshTokenRepository>(TYPES.RefreshTokenRepository)
   .to(RefreshTokenRepository);
-container.bind<IJOBRoleRepository>(TYPES.JobRoleRepository).to(JobRoleRepository);
+container
+  .bind<IJOBRoleRepository>(TYPES.JobRoleRepository)
+  .to(JobRoleRepository);
+container
+  .bind<IScanReportRepository>(TYPES.ScanReportRepository)
+  .to(ScanReportRepository);
 
 // Services
 container.bind<IHashingService>(TYPES.HashingService).to(BcryptService);
@@ -44,20 +57,37 @@ container.bind<IJWTService>(TYPES.JWTService).to(JWTService);
 container.bind<IFileStorageService>(TYPES.FileStorageService).to(MulterService);
 container.bind<ILLMService>(TYPES.LLMService).to(GeminiService);
 container.bind<IPdfParserService>(TYPES.PdfParserService).to(PdfParserService);
+container.bind<IPromptService>(TYPES.PromptService).to(PromptService);
 
 // Use Cases
 container.bind<IRegisterUseCase>(TYPES.RegisterUseCase).to(RegisterUseCase);
 container.bind<ILoginUseCase>(TYPES.LoginUseCase).to(LoginUseCase);
 container.bind<IRefreshUseCase>(TYPES.RefreshUseCase).to(RefreshUseCase);
-container.bind<IGetJobRolesUseCase>(TYPES.GetJobRolesUseCase).to(GetJobRolesUseCase);
+container
+  .bind<IGetJobRolesUseCase>(TYPES.GetJobRolesUseCase)
+  .to(GetJobRolesUseCase);
+container
+  .bind<ICreateScanReportUseCase>(TYPES.CreateScanReportUseCase)
+  .to(CreateScanReportUseCase);
 
 // Controllers
 container.bind<AuthController>(TYPES.AuthController).to(AuthController);
-container.bind<JobRoleController>(TYPES.JobRoleController).to(JobRoleController);
+container
+  .bind<JobRoleController>(TYPES.JobRoleController)
+  .to(JobRoleController);
+container
+  .bind<ScanReportController>(TYPES.ScanReportController)
+  .to(ScanReportController);
+
 // Middlewares
 container
   .bind<ErrorHandlerMiddleware>(TYPES.ErrorHandlerMiddleware)
   .to(ErrorHandlerMiddleware);
-container.bind<UserAuthMiddleware>(TYPES.UserAuthMiddleware).to(UserAuthMiddleware);
+container
+  .bind<UserAuthMiddleware>(TYPES.UserAuthMiddleware)
+  .to(UserAuthMiddleware);
+container
+  .bind<PDFStorageMiddleware>(TYPES.PdfStorageMiddleware)
+  .to(PDFStorageMiddleware);
 
 export default container;
