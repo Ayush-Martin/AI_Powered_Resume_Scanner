@@ -10,6 +10,7 @@ class ScanReportEntity {
     public readonly jobRoleId: number,
     public readonly matchPercentage: number,
     public readonly analysisResult: IAnalysisResult,
+    public readonly jobRoleTitle?: string,
     public readonly id?: number,
     public readonly createdAt?: Date,
     public readonly updatedAt?: Date,

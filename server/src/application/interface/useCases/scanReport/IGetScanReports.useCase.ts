@@ -1,5 +1,5 @@
-import { ReverseGetScanReportsDto } from "../../../DTO/scanReport/getScanReports.dto";
+import { ForwardGetScanReportsDto, ReverseGetScanReportsDto } from "../../../DTO/scanReport/getScanReports.dto";
 
 export interface IGetScanReportsUseCase {
-  execute(userId: number): Promise<ReverseGetScanReportsDto>;
+  execute(dto: ForwardGetScanReportsDto): Promise<ReverseGetScanReportsDto>;
 }

@@ -14,6 +14,10 @@ scanReportRouter
   .get(scanReportController.getScanReports)
   .post(pdfStorageMiddleware.execute, scanReportController.createScanReport);
 
+scanReportRouter
+  .route("/dashboard")
+  .get(scanReportController.getDashboardStats);
+
 scanReportRouter.route("/:id").get(scanReportController.getScanReport);
 
 export default scanReportRouter;

@@ -40,6 +40,8 @@ import { IGetScanReportUseCase } from "../../application/interface/useCases/scan
 import { IGetScanReportsUseCase } from "../../application/interface/useCases/scanReport/IGetScanReports.useCase";
 import GetScanReportUseCase from "../../application/useCases/scanReport/getScanReport.useCase";
 import GetScanReportsUseCase from "../../application/useCases/scanReport/getScanReports.useCase";
+import { IGetDashboardStatsUseCase } from "../../application/interface/useCases/scanReport/IGetDashboardStats.useCase";
+import GetDashboardStatsUseCase from "../../application/useCases/scanReport/getDashboardStats.useCase";
 
 const container = new Container();
 
@@ -79,6 +81,9 @@ container
 container
   .bind<IGetScanReportsUseCase>(TYPES.GetScanReportsUseCase)
   .to(GetScanReportsUseCase);
+container
+  .bind<IGetDashboardStatsUseCase>(TYPES.GetDashboardStatsUseCase)
+  .to(GetDashboardStatsUseCase);
 
 // Controllers
 container.bind<AuthController>(TYPES.AuthController).to(AuthController);
