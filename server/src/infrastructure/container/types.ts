@@ -7,6 +7,7 @@ export enum TYPES {
   // Services
   HashingService = "HashingService",
   JWTService = "JWTService",
+  FileStorageService = "FileStorageService",
 
   // Use Cases
   RegisterUseCase = "RegisterUseCase",

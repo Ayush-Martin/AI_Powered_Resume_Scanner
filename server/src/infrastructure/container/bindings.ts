@@ -22,6 +22,8 @@ import JobRoleRepository from "../repositories/jobRole.repository";
 import { IGetJobRolesUseCase } from "../../application/interface/useCases/jobRole/IGetJobRoles.useCase";
 import GetJobRolesUseCase from "../../application/useCases/jobRole/getJobRoles.useCase";
 import JobRoleController from "../../presentation/REST/controllers/jobRole.controller";
+import MulterService from "../services/Multer.service";
+import { IFileStorageService } from "../interface/services/IFileStorage.service";
 
 const container = new Container();
 
@@ -35,6 +37,7 @@ container.bind<IJOBRoleRepository>(TYPES.JobRoleRepository).to(JobRoleRepository
 // Services
 container.bind<IHashingService>(TYPES.HashingService).to(BcryptService);
 container.bind<IJWTService>(TYPES.JWTService).to(JWTService);
+container.bind<IFileStorageService>(TYPES.FileStorageService).to(MulterService);
 
 // Use Cases
 container.bind<IRegisterUseCase>(TYPES.RegisterUseCase).to(RegisterUseCase);

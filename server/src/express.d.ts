@@ -6,6 +6,7 @@ declare global {
   namespace Express {
     interface Request {
       userId?: number;
+      resumePath?: string; // Added for PDF path from Multer middleware
     }
   }
 }
