@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { loginService } from "../../services/auth.service";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -18,6 +18,7 @@ import { useState } from "react";
 import userValidationRules from "@/validation/validationRule/userValidationRules";
 import { jwtDecode } from "jwt-decode";
 import { AuthLayout } from "../../components/layout/AuthLayout";
+import useAuthStore from "@/store/useAuthStore";
 
 const formSchema = z.object({
   email: userValidationRules.Email,
@@ -26,7 +27,9 @@ const formSchema = z.object({
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
+  const login = useAuthStore((state) => state.login);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -41,12 +44,11 @@ const Login = () => {
     const accessToken = await loginService(values.email, values.password);
     setIsLoading(false);
     if (accessToken) {
-      const decoded = jwtDecode(accessToken) as { role: string };
-      if (decoded.role === "Admin") {
-        navigate("/admin");
-      } else {
-        navigate("/");
-      }
+      login(accessToken);
+      const decoded = jwtDecode(accessToken) as { role?: string };
+      
+      const from = location.state?.from?.pathname || (decoded.role === "Admin" ? "/admin" : "/dashboard");
+      navigate(from, { replace: true });
     }
   }
 

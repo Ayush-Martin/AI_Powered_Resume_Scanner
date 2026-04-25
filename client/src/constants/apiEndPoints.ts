@@ -4,3 +4,13 @@ export enum AuthApiEndPoints {
   LOGOUT_API = "auth/logout",
   REGISTER_API = "auth/register",
 }
+
+export enum ScanReportApiEndPoints {
+  CREATE_SCAN_REPORT = "scanReports",
+  GET_SCAN_REPORTS = "scanReports",
+  GET_SCAN_REPORT = "scanReports",
+}
+
+export enum JobRoleApiEndPoints {
+  GET_JOB_ROLES = "jobRoles",
+}
