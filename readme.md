@@ -4,6 +4,42 @@ An intelligent recruitment tool that analyzes PDF resumes to determine job role 
 
 ---
 
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js (v18+)
+- MySQL Database
+- Gemini API Key
+
+### Setup Instructions
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd AI_Powered_Resume_Scanner
+   ```
+
+2. **Server Configuration**
+   - Navigate to `server` directory: `cd server`
+   - Install dependencies: `npm install`
+   - Create `.env` file from `.env.example` and fill in your details.
+   - Run migrations: `npm run migrate`
+   - Seed database (optional): `npm run seed`
+   - Start server: `npm run dev`
+
+3. **Client Configuration**
+   - Navigate to `client` directory: `cd client`
+   - Install dependencies: `npm install`
+   - Create `.env` file from `.env.example`.
+   - Start client: `npm run dev`
+
+### 🔑 Sample Credentials
+Use the following credentials to test the application:
+- **Email:** `abc@gmail.com`
+- **Password:** `User123!`
+
+---
+
 ## Core Features
 
 ### 🔐 Authentication & Security
@@ -19,10 +55,11 @@ An intelligent recruitment tool that analyzes PDF resumes to determine job role 
 ### 📊 Matching & Analysis
 * **Job Role Selection:** Dropdown interface to select from predefined industry job roles.
 * **Smart Comparison:** Real-time matching of extracted resume skills against job requirements.
-* **Match Analytics:** * Match percentage calculation.
+* **Match Analytics:**
+    * Match percentage calculation.
     * List of successfully matched skills.
     * Identification of missing skills.
 * **Career Optimization:** Actionable suggestions for missing skills to help users improve their profiles.
 
 ### 🕒 History & Tracking
-* **Scan History:** A dedicated page for authenticated users to track and review all previous resume scans and match results.
+* **Scan History:** A dedicated page for authenticated users to track and review all previous resume scans and match results.
