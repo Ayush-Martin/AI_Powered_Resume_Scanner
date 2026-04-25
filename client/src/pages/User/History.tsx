@@ -8,10 +8,7 @@ import {
   Loader2,
   FileSearch,
   FileText,
-  Calendar,
-  Search,
   ArrowUpRight,
-  Filter,
 } from "lucide-react";
 import useScanReportStore from "@/store/useScanReportStore";
 import usePaginatedData from "@/hooks/usePaginatedData";
@@ -98,7 +95,7 @@ const History = () => {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [fetchingReport, setFetchingReport] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery] = useState("");
 
   // Fetch paginated data from the server
   const fetchData = async ({ page, size }: { page: number; size: number }) => {

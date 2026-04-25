@@ -3,15 +3,11 @@ import {
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   CheckCircle2,
   AlertCircle,
   FileText,
   Calendar,
-  Cpu,
-  X,
-  TrendingUp,
   Target,
 } from "lucide-react";
 import type { IScanReport } from "@/types/scanReport.types";
@@ -27,8 +23,6 @@ const ScanReportModal = ({ report, open, onClose }: ScanReportModalProps) => {
   if (!report) return null;
 
   const scoreColor = report.matchPercentage >= 75 ? "text-green-400" : report.matchPercentage >= 50 ? "text-amber-400" : "text-red-400";
-  const scoreBg = report.matchPercentage >= 75 ? "bg-green-500/10" : report.matchPercentage >= 50 ? "bg-amber-500/10" : "bg-red-500/10";
-  const scoreBorder = report.matchPercentage >= 75 ? "border-green-500/20" : report.matchPercentage >= 50 ? "border-amber-500/20" : "border-red-500/20";
   const barColor = report.matchPercentage >= 75 ? "bg-green-500" : report.matchPercentage >= 50 ? "bg-amber-500" : "bg-red-500";
 
   return (

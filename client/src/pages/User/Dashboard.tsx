@@ -5,7 +5,6 @@ import {
   LayoutDashboard, 
   ArrowUpRight, 
   Loader2,
-  Calendar,
   History as HistoryIcon,
   Sparkles,
   Zap
