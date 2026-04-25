@@ -1,15 +1,21 @@
-import { useMemo } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { CheckCircle2, XCircle, FileText, Calendar, Cpu } from "lucide-react";
+import {
+  CheckCircle2,
+  AlertCircle,
+  FileText,
+  Calendar,
+  Cpu,
+  X,
+  TrendingUp,
+  Target,
+} from "lucide-react";
 import type { IScanReport } from "@/types/scanReport.types";
+import { Button } from "@/components/ui/button";
 
 interface ScanReportModalProps {
   report: IScanReport | null;
@@ -17,201 +23,150 @@ interface ScanReportModalProps {
   onClose: () => void;
 }
 
-// Circular SVG score ring
-const ScoreRing = ({ percentage }: { percentage: number }) => {
-  const radius = 70;
-  const stroke = 10;
-  const normalizedRadius = radius - stroke;
-  const circumference = normalizedRadius * 2 * Math.PI;
-  const strokeDashoffset = circumference - (percentage / 100) * circumference;
-
-  const color = useMemo(() => {
-    if (percentage >= 75) return "#22c55e"; // green-500
-    if (percentage >= 50) return "#f59e0b"; // amber-500
-    return "#ef4444"; // red-500
-  }, [percentage]);
-
-  const label = useMemo(() => {
-    if (percentage >= 75) return "Excellent Match";
-    if (percentage >= 50) return "Good Match";
-    return "Needs Improvement";
-  }, [percentage]);
-
-  return (
-    <div className="flex flex-col items-center gap-3">
-      <div className="relative">
-        <svg height={radius * 2} width={radius * 2}>
-          {/* Background track */}
-          <circle
-            stroke="oklch(1 0 0 / 8%)"
-            fill="transparent"
-            strokeWidth={stroke}
-            r={normalizedRadius}
-            cx={radius}
-            cy={radius}
-          />
-          {/* Score arc */}
-          <circle
-            stroke={color}
-            fill="transparent"
-            strokeWidth={stroke}
-            strokeLinecap="round"
-            strokeDasharray={`${circumference} ${circumference}`}
-            style={{
-              strokeDashoffset,
-              transform: "rotate(-90deg)",
-              transformOrigin: "50% 50%",
-              transition: "stroke-dashoffset 1s ease",
-              filter: `drop-shadow(0 0 6px ${color}88)`,
-            }}
-            r={normalizedRadius}
-            cx={radius}
-            cy={radius}
-          />
-        </svg>
-        {/* Percentage text */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span
-            className="text-3xl font-bold tabular-nums"
-            style={{ color }}
-          >
-            {percentage}%
-          </span>
-          <span className="text-xs text-zinc-400 mt-0.5">match</span>
-        </div>
-      </div>
-      <span
-        className="text-sm font-semibold px-3 py-1 rounded-full"
-        style={{ backgroundColor: `${color}22`, color }}
-      >
-        {label}
-      </span>
-    </div>
-  );
-};
-
 const ScanReportModal = ({ report, open, onClose }: ScanReportModalProps) => {
   if (!report) return null;
 
-  const formattedDate = new Date(report.createdAt).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const scoreColor = report.matchPercentage >= 75 ? "text-green-400" : report.matchPercentage >= 50 ? "text-amber-400" : "text-red-400";
+  const scoreBg = report.matchPercentage >= 75 ? "bg-green-500/10" : report.matchPercentage >= 50 ? "bg-amber-500/10" : "bg-red-500/10";
+  const scoreBorder = report.matchPercentage >= 75 ? "border-green-500/20" : report.matchPercentage >= 50 ? "border-amber-500/20" : "border-red-500/20";
+  const barColor = report.matchPercentage >= 75 ? "bg-green-500" : report.matchPercentage >= 50 ? "bg-amber-500" : "bg-red-500";
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="dark max-w-2xl bg-zinc-950 border border-zinc-800 text-foreground p-0 overflow-hidden shadow-2xl">
-        {/* Header */}
-        <DialogHeader className="px-6 pt-6 pb-4 border-b border-zinc-800">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-              <FileText className="w-4 h-4 text-primary" />
-            </div>
-            <DialogTitle className="text-lg font-semibold text-white">
-              Scan Report
-            </DialogTitle>
-          </div>
-          <div className="flex items-center gap-2 text-xs text-zinc-500 mt-1 ml-10">
-            <Calendar className="w-3.5 h-3.5" />
-            <span>{formattedDate}</span>
-            <span className="text-zinc-700">•</span>
-            <span className="flex items-center gap-1">
-              <Cpu className="w-3.5 h-3.5" />
-              Report #{report.id}
-            </span>
-          </div>
-        </DialogHeader>
-
-        <ScrollArea className="max-h-[70vh]">
-          <div className="px-6 py-6 space-y-6">
-            {/* Score Ring */}
-            <div className="flex justify-center">
-              <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl px-10 py-6">
-                <ScoreRing percentage={report.matchPercentage} />
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="dark bg-black border-zinc-900 text-white !max-w-[1000px] w-[95vw] h-[85vh] overflow-hidden p-0 rounded-[2rem] gap-0 shadow-[0_0_100px_-20px_rgba(0,0,0,1)] border-t border-zinc-800/50">
+        <div className="flex flex-col h-full max-h-[85vh]">
+          {/* Top Header Bar */}
+          <div className="px-6 py-4 border-b border-zinc-900 flex items-center justify-between bg-zinc-950/50 backdrop-blur-xl flex-shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center">
+                <FileText className="w-5 h-5 text-zinc-400" />
+              </div>
+              <div>
+                <DialogTitle className="text-sm font-bold text-zinc-100 uppercase tracking-widest leading-none">
+                  AI Match Analysis
+                </DialogTitle>
+                <div className="flex items-center gap-2 text-[10px] text-zinc-500 mt-1.5 font-medium">
+                  <Calendar className="w-3 h-3" />
+                  {new Date(report.createdAt).toLocaleDateString("en-US", { month: 'long', day: 'numeric', year: 'numeric' })}
+                </div>
               </div>
             </div>
 
-            <Separator className="bg-zinc-800" />
+          </div>
 
-            {/* Summary */}
-            <div className="space-y-2">
-              <h3 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider">
-                AI Summary
-              </h3>
-              <p className="text-sm text-zinc-400 leading-relaxed bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-3">
-                {report.analysisResult.summary}
-              </p>
-            </div>
+          <div className="flex-1 overflow-y-auto custom-scrollbar">
+            <div className="p-6 md:p-10 space-y-10">
+              
+              {/* Hero Section: Role & Score */}
+              <div className="relative p-8 md:p-12 rounded-[2.5rem] bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/50 overflow-hidden group">
+                <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 blur-[100px] rounded-full group-hover:bg-primary/20 transition-all duration-1000"></div>
+                <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-zinc-500/5 blur-[100px] rounded-full"></div>
+                
+                <div className="relative z-10 flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+                  <div className="space-y-6 max-w-5xl">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-800/50 border border-zinc-700/50 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+                      <Target className="w-3 h-3" /> Targeted Role
+                    </div>
+                    <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter leading-tight">
+                      {report.jobRoleTitle || "Unspecified Role"}
+                    </h2>
+                    <p className="text-zinc-400 text-sm md:text-lg leading-relaxed font-medium">
+                      {report.analysisResult.summary}
+                    </p>
+                  </div>
 
-            <Separator className="bg-zinc-800" />
-
-            {/* Skills Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Skills Found */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-500" />
-                  <h3 className="text-sm font-semibold text-zinc-300">
-                    Skills Matched{" "}
-                    <span className="text-green-500">
-                      ({report.analysisResult.skillsFound.length})
-                    </span>
-                  </h3>
+                  <div className="flex-shrink-0 text-right space-y-3">
+                    <div className={`text-6xl md:text-8xl font-black tracking-tighter ${scoreColor} tabular-nums animate-in zoom-in duration-700`}>
+                      {report.matchPercentage}<span className="text-2xl md:text-4xl ml-1 opacity-50">%</span>
+                    </div>
+                    <div className="flex flex-col items-end gap-2">
+                       <div className="w-full md:w-48 h-2 bg-zinc-800 rounded-full overflow-hidden">
+                          <div className={`h-full ${barColor} transition-all duration-1000 delay-300`} style={{ width: `${report.matchPercentage}%` }}></div>
+                       </div>
+                       <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Match probability score</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {report.analysisResult.skillsFound.length > 0 ? (
-                    report.analysisResult.skillsFound.map((skill) => (
-                      <Badge
-                        key={skill}
-                        variant="secondary"
-                        className="bg-green-500/10 text-green-400 border border-green-500/20 hover:bg-green-500/20 transition-colors text-xs"
+              </div>
+
+              {/* Detail Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                {/* Found Skills */}
+                <div className="p-8 rounded-[2rem] bg-zinc-950 border border-zinc-900 space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center">
+                        <CheckCircle2 className="w-5 h-5 text-green-500" />
+                      </div>
+                      <h3 className="text-sm font-bold text-zinc-100 uppercase tracking-widest">Core Strengths</h3>
+                    </div>
+                    <span className="text-xs font-bold text-zinc-600 tabular-nums bg-zinc-900 px-2 py-1 rounded-lg">
+                      {report.analysisResult.skillsFound.length} Matches
+                    </span>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2.5">
+                    {report.analysisResult.skillsFound.map((skill, i) => (
+                      <div 
+                        key={i} 
+                        className="px-4 py-2.5 bg-zinc-900/50 border border-zinc-800 text-zinc-200 text-xs rounded-xl font-bold hover:border-green-500/30 hover:bg-green-500/[0.02] transition-all cursor-default"
                       >
                         {skill}
-                      </Badge>
-                    ))
-                  ) : (
-                    <span className="text-xs text-zinc-600 italic">
-                      No matching skills found
-                    </span>
-                  )}
+                      </div>
+                    ))}
+                    {report.analysisResult.skillsFound.length === 0 && (
+                      <p className="text-zinc-600 text-xs italic">No matching skills identified.</p>
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              {/* Missing Skills */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <XCircle className="w-4 h-4 text-red-500" />
-                  <h3 className="text-sm font-semibold text-zinc-300">
-                    Missing Skills{" "}
-                    <span className="text-red-500">
-                      ({report.analysisResult.missingSkills.length})
+                {/* Missing Skills */}
+                <div className="p-8 rounded-[2rem] bg-zinc-950 border border-zinc-900 space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+                        <AlertCircle className="w-5 h-5 text-amber-500" />
+                      </div>
+                      <h3 className="text-sm font-bold text-zinc-100 uppercase tracking-widest">Growth Areas</h3>
+                    </div>
+                    <span className="text-xs font-bold text-zinc-600 tabular-nums bg-zinc-900 px-2 py-1 rounded-lg">
+                      {report.analysisResult.missingSkills.length} Missing
                     </span>
-                  </h3>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {report.analysisResult.missingSkills.length > 0 ? (
-                    report.analysisResult.missingSkills.map((skill) => (
-                      <Badge
-                        key={skill}
-                        variant="secondary"
-                        className="bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors text-xs"
+                  </div>
+
+                  <div className="flex flex-wrap gap-2.5">
+                    {report.analysisResult.missingSkills.map((skill, i) => (
+                      <div 
+                        key={i} 
+                        className="px-4 py-2.5 bg-zinc-900/50 border border-zinc-800 text-zinc-400 text-xs rounded-xl font-bold hover:border-amber-500/30 transition-all cursor-default"
                       >
                         {skill}
-                      </Badge>
-                    ))
-                  ) : (
-                    <span className="text-xs text-zinc-600 italic">
-                      All required skills matched!
-                    </span>
-                  )}
+                      </div>
+                    ))}
+                    {report.analysisResult.missingSkills.length === 0 && (
+                      <p className="text-zinc-600 text-xs italic">Perfect match! No missing skills found.</p>
+                    )}
+                  </div>
                 </div>
+
               </div>
+
+
+
             </div>
           </div>
-        </ScrollArea>
+
+          {/* Footer Bar */}
+          <div className="p-6 border-t border-zinc-900 bg-zinc-950/80 backdrop-blur-xl flex items-center justify-end flex-shrink-0">
+             <Button 
+                onClick={onClose} 
+                className="bg-white text-black hover:bg-zinc-200 rounded-2xl px-10 h-12 font-black uppercase tracking-widest text-xs transition-transform active:scale-95 shadow-xl"
+             >
+               Close Analysis
+             </Button>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );

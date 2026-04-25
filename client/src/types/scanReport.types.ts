@@ -7,6 +7,7 @@ export interface IAnalysisResult {
 export interface IScanReportListItem {
   id: number;
   matchPercentage: number;
+  jobRoleTitle?: string;
   createdAt: Date;
 }
 
@@ -15,6 +16,7 @@ export interface IScanReport {
   userId: number;
   jobRoleId: number;
   matchPercentage: number;
+  jobRoleTitle?: string;
   analysisResult: IAnalysisResult;
   createdAt: Date;
 }
@@ -28,4 +30,10 @@ export interface IPaginatedScanReports {
   scanReports: IScanReportListItem[];
   page: number;
   noOfPages: number;
+}
+
+export interface IDashboardStats {
+  totalScans: number;
+  averageMatchPercentage: number;
+  latestScans: IScanReportListItem[];
 }

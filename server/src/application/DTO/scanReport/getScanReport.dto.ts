@@ -8,6 +8,7 @@ export class ReverseGetScanReportDto {
   public jobRoleId: number;
   public matchPercentage: number;
   public analysisResult: IAnalysisResult;
+  public jobRoleTitle?: string;
   public createdAt: Date;
 
   constructor(entity: ScanReportEntity) {
@@ -16,6 +17,7 @@ export class ReverseGetScanReportDto {
     this.jobRoleId = entity.jobRoleId;
     this.matchPercentage = entity.matchPercentage;
     this.analysisResult = entity.analysisResult;
+    this.jobRoleTitle = entity.jobRoleTitle;
     this.createdAt = entity.createdAt as Date;
   }
 }

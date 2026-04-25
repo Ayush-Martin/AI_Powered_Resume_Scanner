@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -14,81 +14,21 @@ import {
   Loader2,
   Sparkles,
   ChevronDown,
+  Target,
+  Zap
 } from "lucide-react";
-import { toast } from "sonner";
-import { createScanReportService } from "@/services/scanReport.service";
-import { getJobRolesService } from "@/services/jobRole.service";
-import useScanReportStore from "@/store/useScanReportStore";
 import ScanReportModal from "@/components/scanReport/ScanReportModal";
-import type { IJobRole } from "@/types/scanReport.types";
+import { useJobRoles } from "@/hooks/useJobRoles";
+import { useFileSelect } from "@/hooks/useFileSelect";
+import { useScanAnalysis } from "@/hooks/useScanAnalysis";
 
 const Scan = () => {
-  const [file, setFile] = useState<File | null>(null);
-  const [dragOver, setDragOver] = useState(false);
   const [jobRoleId, setJobRoleId] = useState<string>("");
-  const [jobRoles, setJobRoles] = useState<IJobRole[]>([]);
-  const [loadingJobRoles, setLoadingJobRoles] = useState(true);
-  const [analyzing, setAnalyzing] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { jobRoles, loading: loadingJobRoles } = useJobRoles();
+  const { file, dragOver, fileInputRef, handleDrop, handleInputChange, removeFile, onDragOver, onDragLeave } = useFileSelect();
+  const { analyzing, modalOpen, activeScanReport, runAnalysis, closeModal } = useScanAnalysis();
 
-  const { activeScanReport, setActiveScanReport } = useScanReportStore();
-
-  // Fetch job roles on mount
-  useEffect(() => {
-    const fetchJobRoles = async () => {
-      setLoadingJobRoles(true);
-      const roles = await getJobRolesService();
-      if (roles) setJobRoles(roles);
-      setLoadingJobRoles(false);
-    };
-    fetchJobRoles();
-  }, []);
-
-  const handleFile = useCallback((incoming: File) => {
-    if (incoming.type !== "application/pdf") {
-      toast.error("Only PDF files are accepted.");
-      return;
-    }
-    if (incoming.size > 5 * 1024 * 1024) {
-      toast.error("File size must be under 5 MB.");
-      return;
-    }
-    setFile(incoming);
-  }, []);
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOver(false);
-    const dropped = e.dataTransfer.files[0];
-    if (dropped) handleFile(dropped);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = e.target.files?.[0];
-    if (selected) handleFile(selected);
-  };
-
-  const handleRemoveFile = () => {
-    setFile(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  };
-
-  const handleAnalyze = async () => {
-    if (!file) return toast.error("Please upload your resume PDF.");
-    if (!jobRoleId) return toast.error("Please select a job role.");
-
-    setAnalyzing(true);
-    try {
-      const result = await createScanReportService(Number(jobRoleId), file);
-      if (result) {
-        setActiveScanReport(result);
-        setModalOpen(true);
-      }
-    } finally {
-      setAnalyzing(false);
-    }
-  };
+  const handleAnalyze = () => runAnalysis(jobRoleId, file);
 
   const formatFileSize = (bytes: number) => {
     if (bytes < 1024) return `${bytes} B`;
@@ -97,155 +37,148 @@ const Scan = () => {
   };
 
   return (
-    <div className="dark flex flex-col h-full bg-black text-white overflow-auto">
-      {/* Page header */}
-      <div className="px-8 pt-8 pb-4 border-b border-zinc-900">
-        <div className="flex items-center gap-3 mb-1">
-          <div className="w-8 h-8 rounded-lg bg-white/5 border border-zinc-800 flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-white/70" />
-          </div>
-          <h1 className="text-xl font-semibold text-white">Resume Scanner</h1>
-        </div>
-        <p className="text-sm text-zinc-500 ml-11">
-          Upload your resume and select a job role to get an AI-powered match analysis.
-        </p>
-      </div>
-
-      {/* Main content */}
-      <div className="flex-1 flex items-start justify-center px-6 py-10">
-        <div className="w-full max-w-2xl space-y-6">
-
-          {/* PDF Upload Zone */}
+    <div className="dark h-full bg-black text-white overflow-y-auto animate-in fade-in duration-700 custom-scrollbar">
+      <div className="px-6 md:px-10 pt-8 pb-12 space-y-10">
+        
+        {/* Dynamic Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-2">
-            <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider">
-              Resume (PDF)
-            </label>
-
-            {!file ? (
-              <div
-                onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-                onDragLeave={() => setDragOver(false)}
-                onDrop={handleDrop}
-                onClick={() => fileInputRef.current?.click()}
-                className={`
-                  relative group cursor-pointer rounded-2xl border-2 border-dashed transition-all duration-200
-                  flex flex-col items-center justify-center py-16 px-8 text-center
-                  ${dragOver
-                    ? "border-white/40 bg-white/5"
-                    : "border-zinc-800 bg-zinc-950 hover:border-zinc-600 hover:bg-zinc-900/50"
-                  }
-                `}
-              >
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".pdf,application/pdf"
-                  className="hidden"
-                  onChange={handleInputChange}
-                />
-                <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-4 group-hover:border-zinc-700 transition-colors">
-                  <Upload className="w-7 h-7 text-zinc-500 group-hover:text-zinc-300 transition-colors" />
-                </div>
-                <p className="text-sm font-medium text-zinc-300 mb-1">
-                  Drop your PDF here, or{" "}
-                  <span className="text-white underline underline-offset-2">browse</span>
-                </p>
-                <p className="text-xs text-zinc-600">PDF only · Max 5 MB</p>
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-white text-black flex items-center justify-center shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+                <Sparkles className="w-5 h-5" />
               </div>
-            ) : (
-              /* File Preview Card */
-              <div className="flex items-center gap-4 rounded-2xl border border-zinc-800 bg-zinc-900/60 px-5 py-4">
-                {/* PDF icon */}
-                <div className="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center flex-shrink-0">
-                  <FileText className="w-6 h-6 text-red-400" />
-                </div>
-                {/* File info */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">{file.name}</p>
-                  <p className="text-xs text-zinc-500 mt-0.5">{formatFileSize(file.size)}</p>
-                </div>
-                {/* Remove */}
-                <button
-                  onClick={handleRemoveFile}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-zinc-500 hover:text-white hover:bg-zinc-800 transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Job Role Dropdown */}
-          <div className="space-y-2">
-            <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider">
-              Target Job Role
-            </label>
-            <Select
-              value={jobRoleId}
-              onValueChange={setJobRoleId}
-              disabled={loadingJobRoles}
-            >
-              <SelectTrigger className="w-full bg-zinc-950 border-zinc-800 text-white rounded-xl h-12 hover:border-zinc-600 transition-colors focus:ring-1 focus:ring-zinc-600">
-                {loadingJobRoles ? (
-                  <span className="flex items-center gap-2 text-zinc-500">
-                    <Loader2 className="w-4 h-4 animate-spin" /> Loading roles…
-                  </span>
-                ) : (
-                  <SelectValue placeholder="Select a job role" />
-                )}
-                <ChevronDown className="w-4 h-4 text-zinc-500 ml-auto" />
-              </SelectTrigger>
-              <SelectContent className="dark bg-zinc-900 border-zinc-800 text-white rounded-xl">
-                {jobRoles.map((role) => (
-                  <SelectItem
-                    key={role.id}
-                    value={String(role.id)}
-                    className="focus:bg-zinc-800 focus:text-white cursor-pointer rounded-lg"
-                  >
-                    {role.title}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Analyze Button */}
-          <Button
-            id="analyze-btn"
-            onClick={handleAnalyze}
-            disabled={analyzing || !file || !jobRoleId}
-            className="w-full h-12 rounded-xl bg-white text-black font-semibold text-sm hover:bg-zinc-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-          >
-            {analyzing ? (
-              <span className="flex items-center gap-2">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Analyzing Resume…
-              </span>
-            ) : (
-              <span className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4" />
-                Analyze Resume
-              </span>
-            )}
-          </Button>
-
-          {/* Helper hint */}
-          {analyzing && (
-            <p className="text-center text-xs text-zinc-600 animate-pulse">
-              This may take a moment — our AI is reading your resume…
+              <h1 className="text-2xl md:text-3xl font-black text-white tracking-tighter uppercase leading-none">Analysis</h1>
+            </div>
+            <p className="text-zinc-500 text-xs md:text-sm font-medium md:ml-12 max-w-md">
+              AI-powered resume analysis against job requirements.
             </p>
-          )}
+          </div>
+        </div>
+
+        {/* Content Section */}
+        <div className="flex flex-col xl:flex-row gap-8 items-start">
+            
+            {/* Upload Area */}
+            <div className="flex-1 w-full space-y-6 animate-in slide-in-from-bottom-6 duration-700 delay-100">
+                <div className="space-y-3">
+                    <div className="flex items-center gap-2 ml-4">
+                        <Upload className="w-3.5 h-3.5 text-zinc-600" />
+                        <h3 className="text-[9px] font-black text-zinc-600 uppercase tracking-[0.2em]">Source Material</h3>
+                    </div>
+                    
+                    {!file ? (
+                        <div
+                            onDragOver={onDragOver}
+                            onDragLeave={onDragLeave}
+                            onDrop={handleDrop}
+                            onClick={() => fileInputRef.current?.click()}
+                            className={`
+                                relative p-10 md:p-16 rounded-[2rem] border-2 border-dashed transition-all duration-500
+                                flex flex-col items-center justify-center text-center group cursor-pointer
+                                ${dragOver
+                                    ? "border-white bg-white/[0.02] shadow-[0_0_30px_rgba(255,255,255,0.05)]"
+                                    : "border-zinc-900 bg-zinc-950 hover:border-zinc-700 hover:bg-zinc-900/20"
+                                }
+                            `}
+                        >
+                            <input ref={fileInputRef} type="file" accept=".pdf" className="hidden" onChange={handleInputChange} />
+                            <div className="w-16 h-16 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-black transition-all duration-500 shadow-2xl">
+                                <Upload className="w-7 h-7 text-zinc-500 group-hover:text-white transition-colors" />
+                            </div>
+                            <div className="space-y-1">
+                                <h4 className="text-lg font-black text-white tracking-tight">Drop Resume PDF</h4>
+                                <p className="text-zinc-600 text-xs font-medium">Secure local processing · Max 5MB</p>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="p-8 rounded-[2rem] bg-zinc-950 border border-zinc-800 flex items-center justify-between group relative overflow-hidden animate-in zoom-in-95 duration-500">
+                            <div className="flex items-center gap-5 relative z-10">
+                                <div className="w-14 h-14 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center shadow-lg">
+                                    <FileText className="w-7 h-7 text-red-400" />
+                                </div>
+                                <div className="min-w-0">
+                                    <h4 className="text-lg font-black text-white tracking-tight truncate max-w-[150px] md:max-w-xs">{file.name}</h4>
+                                    <div className="flex items-center gap-2 mt-1">
+                                        <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">{formatFileSize(file.size)}</span>
+                                        <div className="w-1 h-1 rounded-full bg-zinc-800"></div>
+                                        <span className="text-[9px] font-black text-red-500 uppercase tracking-widest">PDF Ready</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button onClick={removeFile} className="w-10 h-10 rounded-xl bg-zinc-900 flex items-center justify-center text-zinc-500 hover:text-white hover:bg-zinc-800 transition-all active:scale-90 relative z-10">
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Target Role & Execution */}
+            <div className="w-full xl:w-96 space-y-8 animate-in slide-in-from-right-6 duration-700 delay-200">
+                <div className="space-y-4">
+                    <div className="flex items-center gap-2 ml-4">
+                        <Target className="w-4 h-4 text-zinc-600" />
+                        <h3 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em]">Target Metrics</h3>
+                    </div>
+                    
+                    <div className="p-8 rounded-[3rem] bg-zinc-950 border border-zinc-900 space-y-8">
+                        <div className="space-y-4">
+                            <label className="text-[10px] font-black text-zinc-700 uppercase tracking-widest ml-1">Select Job Role</label>
+                            <Select value={jobRoleId} onValueChange={setJobRoleId} disabled={loadingJobRoles}>
+                                <SelectTrigger className="w-full h-14 bg-zinc-900 border-zinc-800 rounded-2xl px-6 focus:ring-0 focus:border-zinc-600 text-sm font-bold uppercase tracking-widest">
+                                    <SelectValue placeholder="Target Role..." />
+                                    <ChevronDown className="w-4 h-4 text-zinc-500 opacity-50" />
+                                </SelectTrigger>
+                                <SelectContent className="dark bg-zinc-900 border-zinc-800 rounded-2xl p-2 shadow-2xl">
+                                    {jobRoles.map((role) => (
+                                        <SelectItem key={role.id} value={String(role.id)} className="rounded-xl h-12 font-bold uppercase tracking-widest text-[10px] focus:bg-zinc-800 focus:text-white transition-colors cursor-pointer">
+                                            {role.title}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <Button 
+                            onClick={handleAnalyze} 
+                            disabled={analyzing || !file || !jobRoleId}
+                            className={`
+                                w-full h-16 rounded-[1.5rem] font-black uppercase tracking-[0.2em] text-xs transition-all duration-500
+                                ${analyzing || !file || !jobRoleId
+                                    ? "bg-zinc-900 text-zinc-700 border border-zinc-800"
+                                    : "bg-white text-black hover:bg-zinc-200 hover:scale-105 active:scale-95 shadow-[0_20px_40px_rgba(255,255,255,0.1)]"
+                                }
+                            `}
+                        >
+                            {analyzing ? (
+                                <div className="flex items-center gap-3">
+                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                    Scanning...
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-3">
+                                    <Zap className="w-5 h-5" />
+                                    Launch Analysis
+                                </div>
+                            )}
+                        </Button>
+                    </div>
+                </div>
+
+                <div className="p-8 rounded-[2.5rem] bg-zinc-950/40 border border-zinc-900/50">
+                    <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest leading-loose text-center">
+                        Your data is processed using <span className="text-zinc-400">Deep-Learning Models</span> to ensure accurate match probability.
+                    </p>
+                </div>
+            </div>
+
         </div>
       </div>
 
-      {/* Scan Report Modal */}
       <ScanReportModal
         report={activeScanReport}
         open={modalOpen}
-        onClose={() => {
-          setModalOpen(false);
-          setActiveScanReport(null);
-        }}
+        onClose={closeModal}
       />
     </div>
   );

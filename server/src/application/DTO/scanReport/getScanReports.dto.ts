@@ -26,6 +26,7 @@ export class ReverseGetScanReportsDto {
   public scanReports: Array<{
     id: number;
     matchPercentage: number;
+    jobRoleTitle?: string;
     createdAt: Date;
   }>;
   public page: number;
@@ -35,6 +36,7 @@ export class ReverseGetScanReportsDto {
     this.scanReports = entities.map((entity) => ({
       id: entity.id as number,
       matchPercentage: entity.matchPercentage,
+      jobRoleTitle: entity.jobRoleTitle,
       createdAt: entity.createdAt as Date,
     }));
     this.page = page;

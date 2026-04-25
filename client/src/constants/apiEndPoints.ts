@@ -9,6 +9,7 @@ export enum ScanReportApiEndPoints {
   CREATE_SCAN_REPORT = "scanReports",
   GET_SCAN_REPORTS = "scanReports",
   GET_SCAN_REPORT = "scanReports",
+  GET_DASHBOARD_STATS = "scanReports/dashboard",
 }
 
 export enum JobRoleApiEndPoints {

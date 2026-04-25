@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Loader2 } from "lucide-react";
+import { Loader2, Zap, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import userValidationRules from "@/validation/validationRule/userValidationRules";
 import { jwtDecode } from "jwt-decode";
@@ -54,31 +54,29 @@ const Login = () => {
 
   return (
     <AuthLayout>
-      <div className="mb-10">
-        <h2 className="text-3xl font-bold tracking-tight text-foreground mb-2">
-          Welcome back
-        </h2>
-        <p className="text-muted-foreground">
-          Sign in to access your dashboard
+      <div className="space-y-1 mb-6">
+        <h2 className="text-xl font-black text-white tracking-tight uppercase">Login</h2>
+        <p className="text-zinc-600 text-[10px] font-bold uppercase tracking-widest">
+          Enter credentials to access
         </p>
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
             control={form.control}
             name="email"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-foreground font-medium">Email Address</FormLabel>
+              <FormItem className="space-y-1.5">
+                <FormLabel className="text-[9px] font-black text-zinc-600 uppercase tracking-widest ml-1">Email Address</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="name@company.com"
-                    className="h-12 bg-card border-border focus:border-primary focus:ring-primary/20 transition-all"
+                    className="h-12 bg-zinc-900 border-zinc-800 rounded-xl px-5 text-sm font-bold focus:border-zinc-600 focus:ring-0 transition-all placeholder:text-zinc-800"
                     {...field}
                   />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-[9px] font-bold text-red-500 uppercase tracking-widest ml-1" />
               </FormItem>
             )}
           />
@@ -86,37 +84,50 @@ const Login = () => {
             control={form.control}
             name="password"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-foreground font-medium">Password</FormLabel>
+              <FormItem className="space-y-1.5">
+                <FormLabel className="text-[9px] font-black text-zinc-600 uppercase tracking-widest ml-1">Password</FormLabel>
                 <FormControl>
                   <Input
                     type="password"
-                    placeholder="Enter your password"
-                    className="h-12 bg-card border-border focus:border-primary focus:ring-primary/20 transition-all"
+                    placeholder="••••••••"
+                    className="h-12 bg-zinc-900 border-zinc-800 rounded-xl px-5 text-sm font-bold focus:border-zinc-600 focus:ring-0 transition-all placeholder:text-zinc-800"
                     {...field}
                   />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-[9px] font-bold text-red-500 uppercase tracking-widest ml-1" />
               </FormItem>
             )}
           />
 
           <Button
             type="submit"
-            className="w-full h-12 text-base font-medium bg-primary hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30"
+            className={`w-full h-14 rounded-xl font-black uppercase tracking-[0.2em] text-[10px] transition-all duration-500 mt-2 ${
+                isLoading 
+                ? "bg-zinc-800 text-zinc-700" 
+                : "bg-white text-black hover:bg-zinc-200 shadow-lg active:scale-95"
+            }`}
             disabled={isLoading}
           >
-            {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
-            {isLoading ? "Signing in..." : "Sign In"}
+            {isLoading ? (
+                <div className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Checking...
+                </div>
+            ) : (
+                <div className="flex items-center gap-2">
+                    <Zap className="w-4 h-4" />
+                    Secure Login
+                </div>
+            )}
           </Button>
         </form>
       </Form>
 
-      <div className="mt-6 text-center">
-        <p className="text-sm text-muted-foreground">
-          Don't have an account?{" "}
-          <Link to="/auth/register" className="font-semibold text-primary hover:underline">
-            Sign up
+      <div className="mt-8 pt-6 border-t border-zinc-900/50 text-center">
+        <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">
+          New?{" "}
+          <Link to="/auth/register" className="text-white hover:text-primary transition-colors inline-flex items-center gap-1.5 ml-1 group">
+            Create <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
           </Link>
         </p>
       </div>

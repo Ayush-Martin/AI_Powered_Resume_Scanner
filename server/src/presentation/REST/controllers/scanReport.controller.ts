@@ -9,6 +9,7 @@ import { successResponse } from "../../../shared/utils/responseCreator";
 import { IGetScanReportUseCase } from "../../../application/interface/useCases/scanReport/IGetScanReport.useCase";
 import { IGetScanReportsUseCase } from "../../../application/interface/useCases/scanReport/IGetScanReports.useCase";
 import { ForwardGetScanReportsDto } from "../../../application/DTO/scanReport/getScanReports.dto";
+import { IGetDashboardStatsUseCase } from "../../../application/interface/useCases/scanReport/IGetDashboardStats.useCase";
 
 class ScanReportController {
   constructor(
@@ -18,6 +19,8 @@ class ScanReportController {
     private readonly _getScanReportUseCase: IGetScanReportUseCase,
     @inject(TYPES.GetScanReportsUseCase)
     private readonly _getScanReportsUseCase: IGetScanReportsUseCase,
+    @inject(TYPES.GetDashboardStatsUseCase)
+    private readonly _getDashboardStatsUseCase: IGetDashboardStatsUseCase,
   ) {
     binder(this);
   }
@@ -74,6 +77,22 @@ class ScanReportController {
       res
         .status(StatusCodes.OK)
         .json(successResponse("Scan reports fetched.", data));
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async getDashboardStats(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const userId = req.userId!;
+      const data = await this._getDashboardStatsUseCase.execute(userId);
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse("Dashboard stats fetched.", data));
     } catch (error) {
       next(error);
     }

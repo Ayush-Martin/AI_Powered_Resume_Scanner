@@ -83,3 +83,23 @@ export const getScanReportService = async (
     console.error(err);
   }
 };
+
+/**
+ * Fetches dashboard statistics for the authenticated user.
+ * Returns the dashboard stats or void on failure.
+ */
+export const getDashboardStatsService = async (): Promise<any | void> => {
+  try {
+    const res: IResponse = await appApi.get(
+      ScanReportApiEndPoints.GET_DASHBOARD_STATS,
+    );
+
+    return res.data.data;
+  } catch (err) {
+    const errorMessage =
+      (err as any).response?.data?.error ||
+      "Failed to fetch dashboard stats. Please try again.";
+    toast.error(errorMessage);
+    console.error(err);
+  }
+};

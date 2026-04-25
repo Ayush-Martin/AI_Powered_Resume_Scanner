@@ -12,6 +12,9 @@ Skill.belongsToMany(JobRole, { through: JobRoleSkill, foreignKey: 'skillId' });
 User.hasMany(RefreshToken, { foreignKey: 'userId' });
 RefreshToken.belongsTo(User, { foreignKey: 'userId' });
 
+ScanReport.belongsTo(JobRole, { foreignKey: 'jobRoleId', as: 'jobRole' });
+JobRole.hasMany(ScanReport, { foreignKey: 'jobRoleId' });
+
 export {
   User,
   RefreshToken,

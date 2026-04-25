@@ -5,5 +5,6 @@ export interface IScanReportRepository {
   findById(id: number): Promise<ScanReportEntity | null>;
   getUserScanReports(userId: number, page: number, size: number): Promise<ScanReportEntity[]>;
   getTotalNumberOfScanReports(userId: number): Promise<number>;
+  getAverageMatchPercentage(userId: number): Promise<number>;
   delete(id: number): Promise<void>;
 }
