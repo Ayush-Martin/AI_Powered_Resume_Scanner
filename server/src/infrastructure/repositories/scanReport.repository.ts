@@ -6,7 +6,6 @@ import { Attributes } from "sequelize";
 
 @injectable()
 class ScanReportRepository implements IScanReportRepository {
-  
   private _toEntity(row: ScanReport): ScanReportEntity {
     return new ScanReportEntity(
       row.userId,
@@ -41,12 +40,25 @@ class ScanReportRepository implements IScanReportRepository {
     return row ? this._toEntity(row) : null;
   }
 
-  public async getUserScanReports(userId: number): Promise<ScanReportEntity[]> {
+  public async getUserScanReports(
+    userId: number,
+    page: number,
+    size: number,
+  ): Promise<ScanReportEntity[]> {
+    const offset = (page - 1) * size;
     const rows = await ScanReport.findAll({
       where: { userId },
       order: [["createdAt", "DESC"]], // Show most recent scans first
+      limit: size,
+      offset: offset,
     });
     return rows.map((row) => this._toEntity(row));
+  }
+
+  public async getTotalNumberOfScanReports(userId: number): Promise<number> {
+    return await ScanReport.count({
+      where: { userId },
+    });
   }
 
   public async delete(id: number): Promise<void> {
