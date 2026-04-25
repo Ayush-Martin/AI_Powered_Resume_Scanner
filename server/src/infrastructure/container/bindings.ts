@@ -26,6 +26,8 @@ import MulterService from "../services/Multer.service";
 import { IFileStorageService } from "../interface/services/IFileStorage.service";
 import GeminiService from "../services/gemini.service";
 import { ILLMService } from "../interface/services/ILLM.service";
+import PdfParserService from "../services/PdfParser.service";
+import { IPdfParserService } from "../interface/services/IPdfParser.service";
 
 const container = new Container();
 
@@ -41,6 +43,7 @@ container.bind<IHashingService>(TYPES.HashingService).to(BcryptService);
 container.bind<IJWTService>(TYPES.JWTService).to(JWTService);
 container.bind<IFileStorageService>(TYPES.FileStorageService).to(MulterService);
 container.bind<ILLMService>(TYPES.LLMService).to(GeminiService);
+container.bind<IPdfParserService>(TYPES.PdfParserService).to(PdfParserService);
 
 // Use Cases
 container.bind<IRegisterUseCase>(TYPES.RegisterUseCase).to(RegisterUseCase);

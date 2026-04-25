@@ -9,6 +9,7 @@ export enum TYPES {
   JWTService = "JWTService",
   FileStorageService = "FileStorageService",
   LLMService = "LLMService",
+  PdfParserService = "PdfParserService",
 
   // Use Cases
   RegisterUseCase = "RegisterUseCase",
